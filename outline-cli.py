@@ -116,28 +116,32 @@ def listusers(server):
 def prettyrecord(accesskey):
 	"""Takes a JSON format access key record and prints a pretty version.
 	Plays nice and listens to the -i switch to either print a one-click access link or not."""
-	if arguments.i:
+	if arguments.invite:
 		s = "User ID: {0}\n\tName: {1}\n\tAccess URL: {2}\n\tInvite URL: {3}\n"
 		print s.format(accesskey['id'], accesskey['name'], accesskey['accessUrl'], ACCESS_PREAMBLE + urllib.quote_plus(accesskey["accessUrl"]))
 	else:
 		s = "User ID: {0}\n\tName: {1}\n\tAccess URL: {2}\n"
 		print s.format(accesskey['id'], accesskey['name'], accesskey['accessUrl'])
 
-
-if __name__ == '__main__':
-	# Argparse setup (takes the server list, so we invoke it first)
+def getargs():
+	"""Argparse setup
+	Takes the server list, so we invoke load_servers() first.
+	At this point I realized I have no clue how to write proper OO code."""
 	load_servers()
 	parser = argparse.ArgumentParser(description='Fleet management for Outline VPN servers')
 	parser.add_argument('-s', '--server', required=True, help='Server to take action on', choices=server_names)
 	actions = parser.add_mutually_exclusive_group(required=True)
 	actions.add_argument('-a', '--adduser', action='store_true', help="Create a user key on server")
-	actions.add_argument('-d', '--deluser', metavar='ID', type=int, help="Delete user key with given ID from server")
+	actions.add_argument('-d', '--deluser', metavar='<ID>', type=int, help="Delete user key with given ID from server")
 	actions.add_argument('-l', '--list', action='store_true', help="List all user keys on server")
-	parser.add_argument('-n', metavar='name', dest='username', help="Set a friendly name for a new user")
-	parser.add_argument('-i', action='store_true', help="Add one-click invitation links to output")
+	parser.add_argument('-n', metavar='<name>', dest='username', help="Set a friendly name for a new user")
+	parser.add_argument('-i', action='store_true', dest='invite', help="Add one-click invitation links to output")
 
-	arguments = parser.parse_args()
-	# print arguments
+	return parser.parse_args()
+
+if __name__ == '__main__':
+
+	arguments = getargs()
 
 	# Invoke correct function
 	if arguments.adduser:
