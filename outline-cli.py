@@ -34,7 +34,7 @@ def load_servers():
 			server_names.append(key)
 		pass
 
-def call_api(action, server, userid=False):
+def call_api(action, server, userid=None, username=None):
 	"""Wrapper thing to call the API based on different actions."""
 	if action == 'deluser' and not userid:
 		raise Exception('Cannot call deluser without passing a User ID')
@@ -53,6 +53,19 @@ def call_api(action, server, userid=False):
 			pass
 		except Exception as e:
 			raise e
+
+		# TODO: Figure out how to get the username to show up in the record we print when done
+		if username:
+			data = json.loads(r.text)
+			uid = data['id']
+			urlline.append("/" + str(uid) + "/name")
+			try:
+				r2 = s.put(''.join(urlline), data = {'name':username}, verify=False)
+				pass
+			except Exception as e:
+				raise e
+			print r2.text
+
 	
 	elif action == "deluser":
 		urlline.append("/" + str(userid))
@@ -81,16 +94,16 @@ def call_api(action, server, userid=False):
 	return r
 
 
-def adduser(server):
+def adduser(server, username):
 	"""Takes a server ID and add a new user key on the server. Prints a pretty record of the new key for ease of sharing."""
-	result = call_api('adduser', server)
+	result = call_api('adduser', server, username=username)
 
 	data = json.loads(result.text)
 	prettyrecord(data)
 
 def deluser(server, userid):
 	"""Takes a server ID and a user key ID and deletes the key from the server. Will alert if you get anything but HTTP 204 in response."""
-	result = call_api('deluser', server, userid)
+	result = call_api('deluser', server, userid=userid)
 
 def listusers(server):
 	"""Takes a server ID and returns a pretty record of all user keys on the server."""
@@ -120,16 +133,16 @@ if __name__ == '__main__':
 	actions.add_argument('-a', '--adduser', action='store_true', help="Create a user key on server")
 	actions.add_argument('-d', '--deluser', metavar='ID', type=int, help="Delete user key with given ID from server")
 	actions.add_argument('-l', '--list', action='store_true', help="List all user keys on server")
-	parser.add_argument('-n', metavar='name', help="Set a friendly name for the newly created user")
+	parser.add_argument('-n', metavar='name', dest='username', help="Set a friendly name for a new user")
 	parser.add_argument('-i', action='store_true', help="Add one-click invitation links to output")
 
 	arguments = parser.parse_args()
-
+	# print arguments
 
 	# Invoke correct function
 	if arguments.adduser:
 		print "Creating a user on server %s" % (arguments.server)
-		adduser(arguments.server)
+		adduser(arguments.server, arguments.username)
 
 	if arguments.deluser:
 		print "Deleting user key number %s from server %s" % (arguments.deluser, arguments.server)
