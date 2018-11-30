@@ -1,5 +1,11 @@
 #!/usr/bin/env python
 
+# Outline "Fleet Management" tool
+# Licensed under the BSD 3-Clause License
+# Copyright 2018 Martin "mlowdi" L. Fällman
+# If you ever use this and want to do something good in the world,
+# consider donating to https://crd.org/
+
 import argparse
 import json
 import requests
