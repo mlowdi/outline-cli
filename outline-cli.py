@@ -126,6 +126,9 @@ def prettyrecord(accesskey):
 	if arguments.invite:
 		s = "User ID: {0}\n\tName: {1}\n\tAccess URL: {2}\n\tInvite URL: {3}\n"
 		print s.format(accesskey['id'], accesskey['name'], accesskey['accessUrl'], ACCESS_PREAMBLE + urllib.quote_plus(accesskey["accessUrl"]))
+        elif arguments.csv:
+                s = "{0},{1},{2},{3}"
+                print s.format(accesskey['id'], accesskey['name'], accesskey['accessUrl'], ACCESS_PREAMBLE + urllib.quote_plus(accesskey["accessUrl"]))
 	else:
 		s = "User ID: {0}\n\tName: {1}\n\tAccess URL: {2}\n"
 		print s.format(accesskey['id'], accesskey['name'], accesskey['accessUrl'])
@@ -143,6 +146,7 @@ def getargs():
 	actions.add_argument('-l', '--list', action='store_true', help="List all user keys on server")
 	parser.add_argument('-n', metavar='<name>', dest='username', help="Set a friendly name for a new user")
 	parser.add_argument('-i', action='store_true', dest='invite', help="Add one-click invitation links to output")
+        parser.add_argument('-c', action='store_true', dest='csv', help="Output listing as CSV")
 
 	return parser.parse_args()
 
