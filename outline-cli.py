@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 # Outline "Fleet Management" tool
 # Licensed under the BSD 3-Clause License
